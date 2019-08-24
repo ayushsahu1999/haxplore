@@ -1,0 +1,24 @@
+#map-canvas{
+    width: 800px;
+    height: 500px;
+}
+
+#server {
+    position: absolute;
+    left: 0%;
+    right: 50%;
+    top: 0%;
+    bottom: 0%;
+    background-color: black;
+    color: white;
+}
+
+#client {
+    position: absolute;
+    left: 50%;
+    right: 0%;
+    top: 0%;
+    bottom: 0%;
+    background-color: grey;
+    color: yellow;
+}
