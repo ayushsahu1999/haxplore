@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Maps</title>
+
+    <style>
+        #map-canvas{
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4A9x0LSscb8LCa48LY5FUCiM65RvtacA&library=drawing,places,geometry"
+    type="text/javascript"></script>
+</head>
+<body>
+    <div id="map-canvas"></div>
+
+    <script>
+
+        var map;
+        var starting = new google.maps.LatLng(26.484987, 80.273709);
+        var ending = new google.maps.LatLng(26.507192, 80.274133);
+        var mapOptions = {
+            zoom: 14,
+            center: starting
+        };
+        var ar = [26.485020000000002, 80.27373, 26.484830000000002, 80.27411000000001, 26.484820000000003, 80.27413, 26.48476, 80.27425000000001, 26.48469, 80.27437, 26.484610000000004, 80.27451, 26.48458, 80.27457000000001, 26.48447, 80.27471000000001, 26.4844, 80.27478, 26.484250000000003, 80.27495, 26.48411, 80.27509, 26.48364, 80.27558, 26.483530000000002, 80.27569000000001, 26.483290000000004, 80.27592000000001, 26.482740000000003, 80.27649000000001, 26.482650000000003, 80.27658000000001, 26.48253, 80.27665, 26.482490000000002, 80.27666, 26.48242, 80.27668000000001, 26.48222, 80.27669, 26.482090000000003, 80.27669, 26.482020000000002, 80.27668000000001, 26.482020000000002, 80.27668000000001, 26.481980000000004, 80.27672000000001, 26.481920000000002, 80.27676000000001, 26.481790000000004, 80.27683, 26.481600000000004, 80.27702000000001, 26.481600000000004, 80.27702000000001, 26.48122, 80.27758, 26.48093, 80.27803, 26.480890000000002, 80.27808, 26.48082, 80.27819000000001, 26.48056, 80.27857, 26.480330000000002, 80.27888, 26.480140000000002, 80.27915, 26.479930000000003, 80.27945000000001, 26.479840000000003, 80.27957, 26.47959, 80.27992, 26.478930000000002, 80.28088000000001, 26.47878, 80.28111000000001, 26.47868, 80.28126, 26.47866, 80.28131, 26.478450000000002, 80.28164000000001, 26.478230000000003, 80.28196000000001, 26.4782, 80.28200000000001, 26.477980000000002, 80.28229, 26.477800000000002, 80.28254000000001]
+        var serializedArr = JSON.stringify(ar);
+        console.log(serializedArr);
+        //var unpackArr = JSON.parse(serializedArr);
+        //console.log(unpackArr);
+        var a = [];
+        var i;
+        for (i=0;i<ar.length;i=i+2){
+          a.push(new google.maps.LatLng(ar[i], ar[i+1]));
+        }
+
+        //console.log(a);
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+
+        var service = new google.maps.DistanceMatrixService();
+
+
+        //console.log(ar.length);
+
+
+        //console.log(a1);
+        for (var k = 0;k < a.length;k++){
+          service.getDistanceMatrix(
+          {
+
+              origins: [a[k]],
+              destinations: [ending],
+              travelMode: 'DRIVING'
+          }, callback);
+        }
+
+
+        function callback(response, status) {
+
+
+            if (status == 'OK') {
+    var origins = response.originAddresses;
+    var destinations = response.destinationAddresses;
+
+
+
+    for (i = 0; i < origins.length; i++) {
+      var results = response.rows[i].elements;
+      for (var j = 0; j < results.length; j++) {
+        var element = results[j];
+        var distance = element.distance.text;
+        var duration = element.duration.text;
+        //console.log(distance, duration);
+      }
+    }
+
+  }
+        }
+
+
+    </script>
+</body>
+</html>
