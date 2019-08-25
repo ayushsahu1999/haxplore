@@ -116,9 +116,10 @@ var res;
         var count = 0;
         var index = 0;
         var j = 0;
-
+        var min_arr = [];
         int = setInterval(function() {
            j=0; 
+           min_arr = [];
           count = (count + 1) % 10000; //resetting once finished
             var icons = line.get('icons');
             icons[0].offset = (count / 100) + '%'; //if n=2 then count modulus by n*100
@@ -126,14 +127,18 @@ var res;
             line.set('icons', icons);
 
             if (index < ar.length){
-                marker.setPosition( new google.maps.LatLng(ar[index], ar[index+1]) );
+                marker.setPosition( new google.maps.LatLng(ar[index], ar[index+1+j]) );
                 console.log(marker.getPosition().lat()+','+marker.getPosition().lng());
                 
                 while(j< 10 && index+j+1<ar.length){
                     //marker.setPosition( new google.maps.LatLng(ar[index+j], ar[index+1+j]) );
-                    socket.emit('alert', {alert_lat: ar[index+j], alert_lng: ar[index+1+j], i: j});
+                    min_arr.push(ar[index+j], ar[index+1+j]);
                     j = j + 2;
                 }
+                console.log("server.js");
+                console.log(min_arr);
+                socket.emit('alert-client', min_arr);
+
                
                 //getDistance(marker.getPosition().lat(), marker.getPosition().lng());
                 index = index + 2;

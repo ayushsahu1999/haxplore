@@ -70,9 +70,9 @@ io.on("connection", (socket) => {
     socket.on('my other event', function (data) {
        // console.log(data);
     });
-    socket.on('alert', function(data){
+    socket.on('alert-client', function(data){
         console.log("Alert !!!");
-        console.log(data.alert_lat, data.alert_lng);
+        console.log(data);
     });
 
 });

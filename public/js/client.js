@@ -1,3 +1,12 @@
+// The code here would be for simulating the ambulance
+
+var socket = io('http://localhost:7000');
+    socket.on('welcome', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+    
+    
+
 function ret() {
     var directionsDisplay = new google.maps.DirectionsRenderer();
     var directionsService = new google.maps.DirectionsService();
@@ -10,7 +19,7 @@ function ret() {
       center: starting
     }
     var map;
-    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    map = new google.maps.Map(document.getElementById('map-canvas-server'), mapOptions);
 
     directionsDisplay.setMap(map);
 
@@ -27,7 +36,6 @@ function ret() {
         position: new google.maps.LatLng(25.268263, 82.982541),
         map: map,
     });
-
 
     var line;
     var a;
@@ -52,14 +60,6 @@ var res;
       }
 
     );
-
-      //console.log(apg);
-
-
-
-    //ret(disp);
-    //console.log('1');
-
 
 
 
@@ -115,21 +115,44 @@ var res;
     function animate() {
         var count = 0;
         var index = 0;
-
+        var j = 0;
+        var min_arr = [];
         int = setInterval(function() {
-            count = (count + 1) % 10000; //resetting once finished
+           j=0; 
+           min_arr = [];
+          count = (count + 1) % 10000; //resetting once finished
             var icons = line.get('icons');
             icons[0].offset = (count / 100) + '%'; //if n=2 then count modulus by n*100
 
             line.set('icons', icons);
 
             if (index < ar.length){
-                marker.setPosition( new google.maps.LatLng(ar[index], ar[index+1]) );
+                marker.setPosition( new google.maps.LatLng(ar[index], ar[index+1+j]) );
                 console.log(marker.getPosition().lat()+','+marker.getPosition().lng());
+                
+                while(j< 10 && index+j+1<ar.length){
+                    //marker.setPosition( new google.maps.LatLng(ar[index+j], ar[index+1+j]) );
+                    min_arr.push(ar[index+j], ar[index+1+j]);
+                    j = j + 2;
+                }
+                var count=0;
+                socket.on('alert-client', function(data){
+                  for(i=0;i<data.length;i++){
+                    for(j=0;j<min_arr.length;j++){
+                      if(min_arr[j]===data[i]){
+                        count++;
+                      }
+                      if(count>=2){
+                      console.log('Please leave a passage!');
+                      }
+                    }
+                  }
+                });
+               
                 //getDistance(marker.getPosition().lat(), marker.getPosition().lng());
                 index = index + 2;
             }
-          }, 24)
+          }, 200)
 
         };
 
@@ -137,5 +160,6 @@ var res;
 
 }
 var a1 = ret();
-//ret();
 setTimeout(function(){console.log(a1);}, 1000);
+
+});
