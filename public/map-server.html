@@ -10,8 +10,16 @@
 <body>
     <div id="map-canvas-server"></div>
     <div id="lat-lng"></div>
-    <div id="map-canvas-client"></div>
-    <div id="Gresponse"></div>
+    <div id="Number-of-alerts"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    var socket = io('http://localhost:7000');
+    socket.on('welcome', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+    //socket.emit('alert', {coord: arr_s});
+    });
+    </script>
     <script type="text/javascript" src="js/server.js"></script>
 </body>
 </html>

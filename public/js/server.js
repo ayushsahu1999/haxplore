@@ -1,106 +1,151 @@
-var directionsDisplay = new google.maps.DirectionsRenderer();
-var directionsService = new google.maps.DirectionsService();
-var map;
-// var map2;
+// The code here would be for simulating the ambulance
 
-var starting = new google.maps.LatLng(26.484987, 80.273709);
-var ending = new google.maps.LatLng(26.477799, 80.296700);
-// var starting2 = new google.maps.LatLng(26.473889, 80.287476);
-// var ending2 = new google.maps.LatLng(26.472160, 80.285824);
-var mapOptions = {
-    zoom: 14, // Sets the overall zoom of the map-canvas
-    center: starting
-};
-map1 = new google.maps.Map(document.getElementById('map-canvas-server'), mapOptions);
-directionsDisplay.setMap(map1);
+var socket = io('http://localhost:7000');
+    socket.on('welcome', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+    
+    
 
-// Contains the source and destination of individual markers
-var request1 = {
-    origin: starting,
-    destination: ending,
-    travelMode: 'DRIVING'
-};
+function ret() {
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+    var directionsService = new google.maps.DirectionsService();
 
-directionsService.route(request1, function(response, status) {
-if (status == "OK") {
-    //directionsDisplay.setDirections(response);
-    // console.log('its dragged')
-    var dict = JSON.stringify(response);
-    console.log(dict);
-    createPolyline(response);
-}
-});
+    var starting = new google.maps.LatLng(25.268263, 82.982541);
+    var ending = new google.maps.LatLng(25.278643, 82.998904);
 
-line = null;
-createPolyline(directionsDisplay.getDirections());
-function createPolyline(directionResult) {
-    console.log("Directions");
-    console.log(directionResult);
-    line = new google.maps.Polyline({
-        path: [],
-        strokeColor: '#bbbbbbb',// Decides the color of the route
-        strokeOpacity: 0.5,
-        strokeWeight: 4,
-        icons: [{
+    var mapOptions = {
+      zoom: 14,
+      center: starting
+    }
+    var map;
+    map = new google.maps.Map(document.getElementById('map-canvas-server'), mapOptions);
+
+    directionsDisplay.setMap(map);
+
+    var ar = [];
+    var a;
+
+    var request = {  //making requests
+      origin: starting,
+      destination: ending,
+      travelMode: 'DRIVING',
+    }
+
+    var marker = new google.maps.Marker({   //positions of markers
+        position: new google.maps.LatLng(25.268263, 82.982541),
+        map: map,
+    });
+
+    var line;
+    var a;
+
+
+var res;
+      directionsService.route(request, function(response, status){  //getting response
+        //console.log(response);
+        if (status == "OK") {
+
+            directionsDisplay.setDirections(response);  //displaying route
+            //console.log(response);
+            console.log('1');
+            //document.getElementById('Gresponse').innerHTML = JSON.stringify(response);
+
+            //console.log(a);
+            createPolyline(response, callback);
+            //disp();
+        }
+        //a =
+        //console.log(a);
+      }
+
+    );
+
+
+
+    function createPolyline(directionResult, callback) {
+
+
+        line = null;
+        var legs = directionResult.routes[0].legs;
+
+        line = new google.maps.Polyline({
+          path: [],
+          strokeColor: '#ff0000',
+          strokeOpacity: 0.5,
+          strokeWeight: 4,
+          icons: [{
             icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 20,// Represents the size of the marker
-                strokeColor: '#393'// Color of the marker
+              path: marker,
+              scale: 15,
+              strokeColor: '#393'
             },
             offset: '100%'
+          }]
+        });
+        //console.log(legs);
+        for (i = 0; i < legs.length; i++) {
+            var steps = legs[i].steps;
+            for (j = 0; j < steps.length; j++) {
+                var nextSegment = steps[j].path;
+                for (k = 0; k < nextSegment.length; k++) {
+                    //console.log(nextSegment[k].lat()+", "+ nextSegment[k].lng());
+                    ar.push(nextSegment[k].lat(), nextSegment[k].lng());  // getting array of lat & long
+                    line.getPath().push(nextSegment[k]);
 
-        }]
-    });
-    var legs = directionResult.routes[0].legs;
-    console.log('legs');
-    console.log(directionResult.routes[0].legs);
-    console.log('legs-length');
-    console.log(legs.length);
-    for (i = 0; i < legs.length; i++) {
-        var steps = legs[i].steps;
-        console.log("steps");
-        console.log(steps);
-        for (j = 0; j < steps.length; j++) {
-            var nextSegment = steps[j].path;
-            for (k = 0; k < nextSegment.length; k++) {
-                line.getPath().push(nextSegment[k]);
+                }
             }
         }
+
+
+        callback();
+    };
+
+
+    function callback() {
+      animate();
     }
-    line.setMap(map1);
-    console.log("This is line");
-    console.log(line);
-    animate();
-    
-};
 
-function animate() {
-    var count = 0;
-    var status = document.getElementById("lat-lng");
-    int = setInterval(function() {
-        count++;// Decides the duration of the whole trip
-        var icons = line.get('icons');
-        icons[0].offset = (count) + '%';// count/20 reudces the speed of the moving marker
-        //console.log("count then offset");
-        //console.log(count);
-       // console.log(icons[0].offset);
-        //icons[1].offset = (count / 20) + '%';
-        //icons[2].offset = (count/40) + '%';
-      /*  for (j = 0; j < steps.length; j++) {
-            var nextSegment = steps[j].path;
-            for (k = 0; k < nextSegment.length; k++) {
-                line.getPath().push(nextSegment[k]);
-                console.log(`${k} is the line.getPath().push(nextSegment[k]);`)
-                console.log(line.getPath().push(nextSegment[k]));
-                console.log('nextSegment');
-                console.log(nextSegment[k].lat());
+      //setting animation
+
+
+
+
+
+    function animate() {
+        var count = 0;
+        var index = 0;
+        var j = 0;
+
+        int = setInterval(function() {
+           j=0; 
+          count = (count + 1) % 10000; //resetting once finished
+            var icons = line.get('icons');
+            icons[0].offset = (count / 100) + '%'; //if n=2 then count modulus by n*100
+
+            line.set('icons', icons);
+
+            if (index < ar.length){
+                marker.setPosition( new google.maps.LatLng(ar[index], ar[index+1]) );
+                console.log(marker.getPosition().lat()+','+marker.getPosition().lng());
+                
+                while(j< 10 && index+j+1<ar.length){
+                    //marker.setPosition( new google.maps.LatLng(ar[index+j], ar[index+1+j]) );
+                    socket.emit('alert', {alert_lat: ar[index+j], alert_lng: ar[index+1+j], i: j});
+                    j = j + 2;
+                }
+               
+                //getDistance(marker.getPosition().lat(), marker.getPosition().lng());
+                index = index + 2;
             }
-        }
+          }, 200)
 
-        status.innerHTML = 
-        */
-       line.set('icons', icons);
-    }, 100);
-    console.log("This is int");
-    console.log(int);
-};
+        };
+
+      return ar;
+
+}
+var a1 = ret();
+setTimeout(function(){console.log(a1);}, 1000);
+
+});

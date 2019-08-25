@@ -4,15 +4,6 @@
     right: 50%;
     top: 0%;
     bottom: 0%;
-    background-color: black;
     color: white;
     border-right: 10px black solid;
-}
-
-#map-canvas-client {
-    position: absolute;
-    left: 50%;
-    right: 0%;
-    top: 0%;
-    bottom: 0%;
 }
